@@ -1,18 +1,16 @@
 import asyncio
 import json
 from aiogram import Bot, Dispatcher, types
-from dotenv import load_dotenv
 import logging
 import os
 
 from parser import get_free_days
 
 
-load_dotenv()
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 REGULAR_PASSWORD = os.getenv('REGULAR_PASSWORD')
 TOKEN = os.getenv('TG_BOT_TOKEN')
-CHECK_INTERVAL = 60  # 10 минут
+CHECK_INTERVAL = 300  # 5 минут
 regular_users = set()
 admin_users = set()
 
@@ -46,6 +44,12 @@ dp = Dispatcher()
 @dp.message()
 async def login_cmd(message: types.Message):
     user_id = message.from_user.id
+
+    if message.text.lower() in ['стоп', '-', '0', 'stop']:
+        try:
+            regular_users.remove(user_id)
+        except KeyError:
+            await message.answer("Нет в списке пользователей.")
 
     try:
         password = message.text.split()[1]
