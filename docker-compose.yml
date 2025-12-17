@@ -3,6 +3,7 @@ services:
     build: .
     container_name: telegram-bot
     restart: unless-stopped
+    user: root
     volumes:
       - ./users.json:/app/users.json
       - ./logs:/app/logs
