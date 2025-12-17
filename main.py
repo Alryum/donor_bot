@@ -101,8 +101,6 @@ async def notify_users():
             formatted_free_days = "\n".join(f"• {day}" for day in free_days)
             if free_days:
                 await send_to_all_users(formatted_free_days)
-            else:
-                await send_to_all_users('Доступных записей не найдено.')
         except Exception as e:
             logging.error(f"Ошибка при проверке сайта: {e}")
             message = f"""❌ *Ошибка при проверке сайта*
