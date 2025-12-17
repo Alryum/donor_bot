@@ -14,6 +14,8 @@ CHECK_INTERVAL = 300  # 5 минут
 regular_users = set()
 admin_users = set()
 
+if not os.path.exists('users.json'):
+    open('users.json', 'w').close()
 
 def save_users():
     """Сохраняет пользователей в файл"""
