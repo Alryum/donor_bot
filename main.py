@@ -36,6 +36,8 @@ def load_users():
             admin_users.update(data.get('admin_users', []))
     except FileNotFoundError:
         pass
+    except json.JSONDecodeError:
+        pass
 
 
 load_users()
