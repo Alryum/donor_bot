@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+RUN echo '{"regular_users": [], "admin_users": []}' > /app/users.json
 
 RUN useradd -m -u 1000 botuser && chown -R botuser:botuser /app
 USER botuser
