@@ -12,9 +12,7 @@ async def get_free_days() -> list[str]:
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as response:
             html = await response.text()
-            with open('test.html', 'r', encoding='utf-8') as file:
-                loc = file.read()
-            soup = BeautifulSoup(loc, 'html.parser')
+            soup = BeautifulSoup(html, 'html.parser')
             calendars = soup.find_all('div', class_='donorform-calendar')
             free_days = []
             
@@ -38,22 +36,31 @@ async def get_free_days() -> list[str]:
                     month_num = month_names_ru.get(month)
                     
                     date_cells = calendar.find_all('td', class_=lambda x: x and ('active' in x or 'current_day' in x))
+                    
                     for cell in date_cells:
                         link = cell.find('a')
+                        day_text = ""
+                        title_attr = ""
+                        
                         if link:
-                            day = link.text.strip()
-                            if day.isdigit():
-                                title_attr = link.get('title', '')
-                                
-                                day_int = int(day)
-                                cell_date = datetime.datetime(int(year), month_num, day_int)
-                                cell_date_str = cell_date.strftime("%Y-%m-%d")
-                                
-                                if cell_date_str != current_date_str:
-                                    free_days.append(f"{day} {month}")
-                                else:
-                                    if await has_future_time_slots(title_attr, now):
-                                        free_days.append(f"{day} {month}")
+                            day_text = link.text.strip()
+                            title_attr = link.get('title', '')
+                        else:
+                            day_text = cell.text.strip()
+                        
+                        day_text = day_text.strip()
+                        if day_text.isdigit():
+                            day_int = int(day_text)
+                            cell_date = datetime.datetime(int(year), month_num, day_int)
+                            cell_date_str = cell_date.strftime("%Y-%m-%d")
+                            
+                            if cell_date_str != current_date_str:
+                                free_days.append(f"{day_text} {month}")
+                            else:
+                                if link and await has_future_time_slots(title_attr, now):
+                                    free_days.append(f"{day_text} {month}")
+                                elif not link:
+                                    free_days.append(f"{day_text} {month}")
             
             return free_days
 
