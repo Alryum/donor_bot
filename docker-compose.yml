@@ -7,6 +7,7 @@ services:
     volumes:
       - ./users.json:/app/users.json
       - ./logs:/app/logs
+      - ./templates:/app/templates
     environment:
       - PYTHONUNBUFFERED=1
     env_file:
