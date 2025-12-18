@@ -1,6 +1,7 @@
 import asyncio
 import json
 from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 import logging
 import os
 
@@ -16,6 +17,7 @@ admin_users = set()
 
 if not os.path.exists('users.json'):
     open('users.json', 'w').close()
+
 
 def save_users():
     """Сохраняет пользователей в файл"""
@@ -45,38 +47,42 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
-@dp.message()
+@dp.message(Command('logout', 'стоп'))
+async def logout(message: types.Message):
+    user_id = message.from_user.id
+    try:
+        regular_users.remove(user_id)
+        await message.answer('Удалено из рассылки')
+    except KeyError:
+        await message.answer('Нет в списке пользователей.')
+
+
+@dp.message(Command('login', 'старт', 'логин'))
 async def login_cmd(message: types.Message):
     user_id = message.from_user.id
-
-    if message.text.lower() in ['стоп', '-', '0', 'stop']:
-        try:
-            regular_users.remove(user_id)
-        except KeyError:
-            await message.answer("Нет в списке пользователей.")
 
     try:
         password = message.text.split()[1]
     except IndexError:
-        await message.answer("Использование: /login пароль")
+        await message.answer('Использование: /login пароль')
         return
 
     if password == ADMIN_PASSWORD:
         if user_id not in admin_users:
             admin_users.add(user_id)
-            await message.answer("✅ Вы вошли как администратор!")
+            await message.answer('✅ Вы вошли как администратор!')
         else:
-            await message.answer("Уже авторизованы как админ.")
+            await message.answer('Уже авторизованы как админ.')
 
     elif password == REGULAR_PASSWORD:
         if user_id not in regular_users:
             regular_users.add(user_id)
-            await message.answer("✅ Вы подписаны на уведомления!")
+            await message.answer('✅ Вы подписаны на уведомления!')
         else:
             await message.answer('Вы уже подписаны на рассылку.')
 
     else:
-        await message.answer("❌ Неверный пароль!")
+        await message.answer('❌ Неверный пароль!')
         return
 
     save_users()
@@ -106,7 +112,7 @@ async def notify_users():
             if free_days:
                 await send_to_all_users(formatted_free_days)
         except Exception as e:
-            logging.error(f"Ошибка при проверке сайта: {e}")
+            logging.error(f'Ошибка при проверке сайта: {e}')
             message = f"""❌ *Ошибка при проверке сайта*
 
 ```python
