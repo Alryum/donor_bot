@@ -8,7 +8,10 @@ services:
       - ./users.json:/app/users.json
       - ./logs:/app/logs
       - ./templates:/app/templates
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     environment:
+      - TZ=Asia/Yekaterinburg
       - PYTHONUNBUFFERED=1
     env_file:
       - .env 
