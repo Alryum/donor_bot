@@ -12,9 +12,6 @@ async def get_free_days() -> list[str]:
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as response:
             html = await response.text()
-            current_time_formatted = datetime.datetime.now().strftime('%m-%d_%H-%M')
-            with open(f'templates/{current_time_formatted}.html', 'w', encoding='utf-8') as file:
-                file.write(html)
             soup = BeautifulSoup(html, 'html.parser')
             calendars = soup.find_all('div', class_='donorform-calendar')
             free_days = []
