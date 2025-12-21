@@ -35,7 +35,7 @@ async def get_free_days() -> list[str]:
 
                     month_num = month_names_ru.get(month)
 
-                    date_cells = calendar.select('td.active:not(.busy)')
+                    date_cells = calendar.select('td.active:not(.busy), td[class=""]')
 
                     for cell in date_cells:
                         link = cell.find('a')
